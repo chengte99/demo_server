@@ -9,5 +9,5 @@ var Stype = require("../Stype");
 var host = game_config.talkroom_config.host;
 var port = game_config.talkroom_config.port;
 
-netbus.start_tcp_server(host, port, proto_man.PROTO_BUF, false);
+netbus.start_tcp_server(host, port, false);
 service_manager.register_service(Stype.TalkRoom, talkroom);

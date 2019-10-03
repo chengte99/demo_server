@@ -22,3 +22,8 @@
 19. encode編寫打入proto_type到數據包。因proto_type已打入包內，decode_cmd_header已無需透過參數取得proto_type，改寫從包內取得utag, proto_type。一併改寫service_manager的decode_cmd_header、decode_cmd，utag&proto_type加入on_player_recv_cmd跟on_service_recv_cmd一起傳遞。
 
 20. netbus編寫兩個接口，get_client_session跟get_service_session
+21. 編寫gw_service，送給服務時打入utag，收到服務回傳時清除utag。
+22. 修改talkroom符合網關轉發模式，修改netbus的send_cmd都帶上utag、proto_type，修改proto_man的encode都帶上utag、proto_type並打入cmd_buf。
+23. 編寫用戶被迫斷線命令，編寫gw_service的on_player_disconnect斷線機制，增加GW_DISCONNECT，talkroom增加接收GW_DISCONNECT判斷。
+24. 修改gateway，在連接每個服務時均註冊gw_service。
+25. 因proto_type已改成打入cmd_buf包內，不在需要從session.proto_type取得，檢查並刪除有關session.proto_type的代碼。且修改netbus的start_tcp_server、start_ws_server，不在需要傳proto_type。

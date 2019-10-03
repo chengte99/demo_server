@@ -8,6 +8,8 @@ var proto_tools = require("./proto_tools");
 var proto_man = {
     PROTO_JSON: 1,
     PROTO_BUF: 2,
+
+    GW_DISCONNECT: 10000,
     
     encrypt_cmd: encrypt_cmd,
     decrypt_cmd: decrypt_cmd,
@@ -59,7 +61,7 @@ function _json_decode(cmd_buf){
     return cmd;
 }
 
-function encode_cmd(proto_type, stype, ctype, body){
+function encode_cmd(utag, proto_type, stype, ctype, body){
     var cmd_buf = null;
     if(proto_type == proto_man.PROTO_JSON){
         cmd_buf = _json_encode(stype, ctype, body);
@@ -74,6 +76,7 @@ function encode_cmd(proto_type, stype, ctype, body){
         cmd_buf = encoders[key](stype, ctype, body);
     }
 
+    proto_tools.write_utag_inbuf(cmd_buf, utag);
     proto_tools.write_proto_type_inbuf(cmd_buf, proto_type);
 
     // str_or_buf = encrypt_cmd(str_or_buf);
@@ -94,7 +97,7 @@ function decode_cmd_header(cmd_buf){
     return cmd;
 }
 
-function decode_cmd(proto_type, cmd_buf){
+function decode_cmd(proto_type, stype, ctype, cmd_buf){
     // cmd_buf = decrypt_cmd(cmd_buf);
     if(cmd_buf.length < proto_tools.header_size){
         return null;
@@ -104,8 +107,6 @@ function decode_cmd(proto_type, cmd_buf){
     if(proto_type == proto_man.PROTO_JSON){
         cmd = _json_decode(cmd_buf);
     }else{
-        var stype = proto_tools.read_int16(cmd_buf, 0);
-        var ctype = proto_tools.read_int16(cmd_buf, 2);
         var key = get_key(stype, ctype);
         if(!decoders[key]){
             log.error("decoders decode_func is empty, stype: " + stype + ", ctype: " + ctype);

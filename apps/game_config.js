@@ -3,7 +3,7 @@ var Stype = require("./Stype");
 var game_config = {
     gateway_config: {
         host: "127.0.0.1",
-        ports: [6080, 6081, 6082, 6083],
+        ports: [6080, 6081],
     },
 
     talkroom_config: {

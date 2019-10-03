@@ -44,7 +44,7 @@ function on_client_recv_cmd(session, cmd_buf){
         return true;
     }
     
-    cmd = proto_man.decode_cmd(proto_type, cmd_buf);
+    cmd = proto_man.decode_cmd(proto_type, stype, ctype, cmd_buf);
     if(!cmd){
         return false;
     }
@@ -57,7 +57,7 @@ function on_client_recv_cmd(session, cmd_buf){
 
 function on_client_lost_connect(session){
     for(var key in service_modules){
-        service_modules[key].on_player_disconnect(session);
+        service_modules[key].on_player_disconnect(key, session);
     }
 }
 
@@ -86,7 +86,7 @@ function on_service_return_cmd(session, cmd_buf){
         return true;
     }
     
-    cmd = proto_man.decode_cmd(proto_type, cmd_buf);
+    cmd = proto_man.decode_cmd(proto_type, stype, ctype, cmd_buf);
     if(!cmd){
         return false;
     }

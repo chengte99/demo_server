@@ -66,6 +66,10 @@ function write_utag_inbuf(cmd_buf, utag){
     write_uint32(cmd_buf, 4, utag);
 }
 
+function clear_utag_inbuf(cmd_buf){
+    write_uint32(cmd_buf, 4, 0);
+}
+
 function write_str_inbuf(cmd_buf, offset, str, byte_len){
     write_int16(cmd_buf, offset, byte_len);
     offset += 2;
@@ -158,6 +162,7 @@ var proto_tools = {
     
     write_proto_type_inbuf: write_proto_type_inbuf,
     write_utag_inbuf: write_utag_inbuf,
+    clear_utag_inbuf: clear_utag_inbuf,
 
     write_str_inbuf: write_str_inbuf,
     read_str_inbuf: read_str_inbuf,
