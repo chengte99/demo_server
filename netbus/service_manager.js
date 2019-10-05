@@ -56,8 +56,13 @@ function on_client_recv_cmd(session, cmd_buf){
 }
 
 function on_client_lost_connect(session){
+    var uid = session.uid;
+    if(uid == 0){ // uid = 0表示還未登入成功，還不是有效的連線，因此網關也無需通知其他服務。
+        return;
+    }
+
     for(var key in service_modules){
-        service_modules[key].on_player_disconnect(key, session);
+        service_modules[key].on_player_disconnect(key, session, uid);
     }
 }
 

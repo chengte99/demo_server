@@ -8,8 +8,6 @@ var proto_tools = require("./proto_tools");
 var proto_man = {
     PROTO_JSON: 1,
     PROTO_BUF: 2,
-
-    GW_DISCONNECT: 10000,
     
     encrypt_cmd: encrypt_cmd,
     decrypt_cmd: decrypt_cmd,

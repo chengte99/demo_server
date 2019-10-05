@@ -38,6 +38,8 @@ function on_session_enter(session, is_ws, is_encrypt){
     session.is_connected = true;
     session.is_encrypt = is_encrypt;
 
+    session.uid = 0;
+
     //擴展 session function
     session.send_encode_cmd = session_send_encode_cmd;
     session.send_cmd = session_send_cmd;

@@ -1,5 +1,6 @@
 var log = require("../../utils/log");
 var proto_man = require("../../netbus/proto_man");
+var Cmd = require("../Cmd");
 require("./talkroom_proto");
 
 var STYPE_TALKKROOM = 1;
@@ -138,7 +139,7 @@ var service = {
             case TalkCmd.SendMsg:
                 user_send_msg(session, body, utag, proto_type);
                 break;
-            case proto_man.GW_DISCONNECT:
+            case Cmd.USER_DISCONNECT:
                 user_exit_room(session, true, utag, proto_type);
                 break;
         }

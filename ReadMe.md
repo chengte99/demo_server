@@ -1,3 +1,4 @@
+0. npm install express, ws, mysql, redis
 1. 建立netbus, 建立tcp & ws server, 並加入session 列表管理.
 2. 建立session_enter, session_exit, session_recv, session_send_cmd, session_close
 3. 建立proto_man, 建立加密解密func(encrypt&decrypt), 建立編碼解碼func(encode&decode), 根據json & buf 製作編碼解碼func
@@ -27,3 +28,13 @@
 23. 編寫用戶被迫斷線命令，編寫gw_service的on_player_disconnect斷線機制，增加GW_DISCONNECT，talkroom增加接收GW_DISCONNECT判斷。
 24. 修改gateway，在連接每個服務時均註冊gw_service。
 25. 因proto_type已改成打入cmd_buf包內，不在需要從session.proto_type取得，檢查並刪除有關session.proto_type的代碼。且修改netbus的start_tcp_server、start_ws_server，不在需要傳proto_type。
+
+26. 建立center_server, game_config配置center_server_config, 建立auth_service。建立Cmd，將GW_DISCONNECT移到Cmd。
+27. 創建mysql table，編寫mysql_center代碼並在center_server時連接數據庫。
+28. 客戶端編寫遊客登陸時從ugame取得guest_key，沒有則隨機生成32位key。編寫遊客登陸相關代碼、mysql代碼。走通遊客登陸流程，客戶端保存ukey以便下次登陸。
+
+29. 修改gw_service，utag根據未登入與已登入分別用session_key與uid，修改on_player_recv_cmd & on_service_recv_cmd。
+30. 建立session & uid 對應表，編寫save_uid_session_map & get_client_session_by_uid接口，登入成功寫入對應表，後續非登入命令使用uid從對應表取得client_session。
+31. 登入成功後判斷先前是否已登入過，重複登入。若有則發送重複登入命令並關閉該session。
+32. 當用戶斷線on_player_disconnect，判斷服務Auth時，清除uid & session對應表。修改on_player_disconnect直接傳入uid，service_manager的on_client_lost_connect 判斷uid為0直接return，無需通知服務。
+
