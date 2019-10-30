@@ -16,3 +16,8 @@ service_manager.register_service(Stype.Auth, auth_service);
 var mysql_center = require("../../database/mysql_center");
 var center_database = game_config.center_database;
 mysql_center.connect(center_database.host, center_database.port, center_database.user, center_database.password, center_database.database);
+
+//連接redis
+var redis_center = require("../../database/redis_center");
+var center_redis = game_config.center_redis;
+redis_center.connect(center_redis.host, center_redis.port, center_redis.db_index);

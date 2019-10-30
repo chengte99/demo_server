@@ -1,6 +1,7 @@
 var utils = require("../../utils/utils");
 var Response = require("../Response");
 var mysql_center = require("../../database/mysql_center");
+var redis_center = require("../../database/redis_center");
 var log = require("../../utils/log");
 
 function write_err(status, ret_func){
@@ -18,6 +19,15 @@ function quest_login_success(data, ret_func){
     ret.uface = data.uface;
     ret.uvip = data.uvip;
     ret.guest_key = data.guest_key;
+
+    redis_center.set_uinfo_inredis(data.uid, {
+        unick: data.unick,
+        usex: data.usex,
+        uface: data.uface,
+        uvip: data.uvip,
+        is_guest: data.is_guest,
+    });
+
     ret_func(ret);
 }
 

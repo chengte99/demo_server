@@ -12,6 +12,11 @@ var game_config = {
         stypes: [Stype.Auth],
     },
 
+    system_servcer_config: {
+        host: "127.0.0.1",
+        port: 6087,
+    },
+
     talkroom_config: {
         host: "127.0.0.1",
         port: 6084,
@@ -25,6 +30,26 @@ var game_config = {
         database: "bycw_center_p",
     },
 
+    game_database: {
+        host: "127.0.0.1",
+        port: 3306,
+        user: "root",
+        password: "asd12345",
+        database: "bycw_game_p",
+    },
+
+    center_redis: {
+        host: "127.0.0.1",
+        port: 6379,
+        db_index: 0,
+    },
+
+    game_redis: {
+        host: "127.0.0.1",
+        port: 6379,
+        db_index: 1,
+    },
+
     game_servers:{
         0: {
             stype: Stype.TalkRoom,
@@ -35,7 +60,18 @@ var game_config = {
             stype: Stype.Auth,
             host: "127.0.0.1",
             port: 6086,
+        },
+        2: {
+            stype: Stype.GameSystem,
+            host: "127.0.0.1",
+            port: 6087,
         }
+    },
+
+    ugame_config: {
+        first_uexp: 1000,
+        first_uchip: 1000,
+
     }
 }
 
