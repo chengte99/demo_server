@@ -12,9 +12,14 @@ var game_config = {
         stypes: [Stype.Auth],
     },
 
-    system_servcer_config: {
+    system_server_config: {
         host: "127.0.0.1",
         port: 6087,
+    },
+
+    game_server_config: {
+        host: "127.0.0.1",
+        port: 6088,
     },
 
     talkroom_config: {
@@ -51,11 +56,11 @@ var game_config = {
     },
 
     game_servers:{
-        0: {
-            stype: Stype.TalkRoom,
-            host: "127.0.0.1",
-            port: 6084,
-        },
+        // 0: {
+        //     stype: Stype.TalkRoom,
+        //     host: "127.0.0.1",
+        //     port: 6084,
+        // },
         1: {
             stype: Stype.Auth,
             host: "127.0.0.1",
@@ -65,6 +70,11 @@ var game_config = {
             stype: Stype.GameSystem,
             host: "127.0.0.1",
             port: 6087,
+        },
+        3: {
+            stype: Stype.FishGame,
+            host: "127.0.0.1",
+            port: 6088,
         }
     },
 

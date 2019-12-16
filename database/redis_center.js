@@ -12,7 +12,7 @@ function connect_to_server(host, port, db_index){
     });
 
     redis_client.on("error", function(err){
-        log.err(err);
+        log.error(err);
     });
 }
 
