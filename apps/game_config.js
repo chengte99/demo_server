@@ -82,6 +82,10 @@ var game_config = {
         first_uexp: 1000,
         first_uchip: 1000,
 
+        fish_game_zone: {
+            0: {zid: 1, name: "初級場", enter_vip: 0, chip: 1000, one_round_chip: 20, think_time: 15},
+            1: {zid: 2, name: "高級場", enter_vip: 0, chip: 2000, one_round_chip: 20, think_time: 15},
+        }
     }
 }
 

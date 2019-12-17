@@ -7,7 +7,7 @@ var game_config = require("../game_config");
 var game_system_service = require("./game_system_service");
 var Stype = require("../Stype");
 
-var game_system = game_config.system_servcer_config;
+var game_system = game_config.system_server_config;
 
 netbus.start_tcp_server(game_system.host, game_system.port, false);
 service_manager.register_service(Stype.GameSystem, game_system_service);

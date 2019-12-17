@@ -7,7 +7,7 @@ var game_config = require("../game_config");
 var fish_game_service = require("./fish_game_service");
 var Stype = require("../Stype");
 
-var fgame = game_config.game_servcer_config
+var fgame = game_config.game_server_config;
 
 netbus.start_tcp_server(fgame.host, fgame.port, false);
 service_manager.register_service(Stype.FishGame, fish_game_service);
