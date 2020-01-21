@@ -71,7 +71,7 @@ fish_game_room.prototype.player_enter_room = function(player){
         }
         var other = this.game_seats[i];
         var body = this.get_user_arrived(other);
-        player.send_cmd(Stype.Game5Chess, Cmd.Game5Chess.USER_ARRIVED, body);
+        player.send_cmd(Stype.Game5Chess, Cmd.FishGame.USER_ARRIVED, body);
     }
 
     //自動配座 或是 手點點座位(由客戶端送seat_id，server驗證後坐下)
@@ -103,7 +103,7 @@ fish_game_room.prototype.player_exit_room = function(player, quit_reason){
     player.exit_room(this);
 
     log.info("player uid:", player.uid, ", exit_room");
-    var status = Response.OK
+    var status = Response.OK;
     player.send_cmd(Stype.FishGame, Cmd.FishGame.EXIT_ROOM, status);
 
     //離開房間，廣播給房間內的人（包括旁觀者），有必要的話
