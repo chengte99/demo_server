@@ -21,6 +21,20 @@ function user_quit(session, body, utag, proto_type){
     });
 }
 
+function send_bullet(session, body, utag, proto_type){
+    if(!body){
+        session.send_cmd(Stype.FishGame, Cmd.FishGame.SEND_BULLET, Response.INVAILD_PARAMS, utag, proto_type);
+        return;
+    }
+
+    var seat_id = body[0];
+    var level = body[1];
+
+    fish_game_model.send_bullet(utag, seat_id, level, function(ret){
+        session.send_cmd(Stype.FishGame, Cmd.FishGame.SEND_BULLET, ret, utag, proto_type);
+    });
+}
+
 var service = {
     name: "fish_game service",
     is_transfer: false,
@@ -34,6 +48,9 @@ var service = {
                 break;
             case Cmd.FishGame.USER_QUIT:
                 user_quit(session, body, utag, proto_type);
+                break;
+            case Cmd.FishGame.SEND_BULLET:
+                send_bullet(session, body, utag, proto_type);
                 break;
             
         }

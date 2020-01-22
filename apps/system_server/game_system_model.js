@@ -20,7 +20,7 @@ function get_game_info_success(data, ret_func){
     ret.udata = data.udata;
     ret.uvip = data.uvip;
 
-    redis_game.set_ugame_inredis(data.uid, {
+    redis_game.set_ugame_info_inredis(data.uid, {
         uexp: data.uexp,
         uchip: data.uchip,
         udata: data.udata,

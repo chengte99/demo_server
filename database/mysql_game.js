@@ -70,8 +70,42 @@ function insert_game_info_by_uid(uid, uexp, uchip, callback){
     })
 }
 
+function update_game_info_uchip_by_uid(uid, bonus, is_add, callback){
+    if(!is_add){
+        bonus = -bonus;
+    }
+    var sql = "update ugame set uchip = uchip + %d where uid = %d";
+    var sql_cmd = util.format(sql, bonus, uid);
+    log.info(sql_cmd);
+
+    mysql_exec(sql_cmd, function(err, sql_result, fields_desic){
+        if(err){
+            callback(Response.SYS_ERROR);
+            return;
+        }
+
+        callback(Response.OK);
+    })
+}
+
+function update_game_info_by_uid(uid, uexp, uchip, uvip, callback){
+    var sql = "update ugame set uexp = %d, uchip = %d, uvip = %d where uid = %d";
+    var sql_cmd = util.format(sql, uexp, uchip, uvip, uid);
+    log.info(sql_cmd);
+
+    mysql_exec(sql_cmd, function(err, sql_result, fields_desic){
+        if(err){
+            callback(Response.SYS_ERROR);
+            return;
+        }
+
+        callback(Response.OK);
+    })
+}
+
 module.exports = {
     connect: connect_to_server,
     get_game_info_by_uid: get_game_info_by_uid,
     insert_game_info_by_uid: insert_game_info_by_uid,
+    update_game_info_by_uid: update_game_info_by_uid,
 }

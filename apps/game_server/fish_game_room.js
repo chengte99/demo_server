@@ -3,9 +3,16 @@ var Cmd = require("../Cmd");
 var QuitReason = require("./QuitReason");
 var Stype = require("../Stype");
 var Response = require("../Response");
+var game_config = require("../game_config");
 
 var INVIEW_SEAT = 20;
 var GAME_SEAT = 2;
+
+function write_err(status, ret_func){
+    var ret = {};
+    ret[0] = status;
+    ret_func(ret);
+}
 
 function fish_game_room(room_id, conf){
     this.room_id = room_id;
@@ -229,6 +236,37 @@ fish_game_room.prototype.room_broadcast = function(stype, ctype, body, not_to_ui
         }
         gw_session.send_cmd(Stype.Broadcast, Cmd.BROADCAST, ret, 0, proto_man.PROTO_BUF);
     }
+}
+
+fish_game_room.prototype.send_bullet = function(player, seat_id, level, ret_func){
+    if(level <= 0 || level > 2){
+        write_err(Response.INVAILD_PARAMS, ret_func);
+        return;
+    }
+
+    var cost, damage, speed;
+    var bullet_level = game_config.ugame_config.bullet_level;
+    for(var key in bullet_level){
+        if(bullet_level[key].level == level){
+            cost = bullet_level[key].cost;
+            damage = bullet_level[key].damage;
+            speed = bullet_level[key].speed;
+        }
+    }
+
+    // 更新uchip數據
+    player.send_bullet(cost);
+
+    var body = {
+        0: Response.OK,
+        1: seat_id,
+        2: level,
+        3: -cost,
+        4: damage,
+        5: speed,
+    }
+
+    player.send_cmd(Stype.FishGame, Cmd.FishGame.SEND_BULLET, body);
 }
 
 module.exports = fish_game_room;
