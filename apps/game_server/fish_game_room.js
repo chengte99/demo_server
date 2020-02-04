@@ -78,7 +78,7 @@ fish_game_room.prototype.player_enter_room = function(player){
         }
         var other = this.game_seats[i];
         var body = this.get_user_arrived(other);
-        player.send_cmd(Stype.Game5Chess, Cmd.FishGame.USER_ARRIVED, body);
+        player.send_cmd(Stype.FishGame, Cmd.FishGame.USER_ARRIVED, body);
     }
 
     //自動配座 或是 手點點座位(由客戶端送seat_id，server驗證後坐下)
