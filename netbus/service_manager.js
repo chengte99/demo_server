@@ -21,7 +21,7 @@ function register_service(stype, service){
 
 function on_client_recv_cmd(session, cmd_buf){
     if(session.is_encrypt){
-        console.log("decrypt");
+        // console.log("decrypt");
         cmd_buf = proto_man.decrypt_cmd(cmd_buf);
     }
 
@@ -68,7 +68,7 @@ function on_client_lost_connect(session){
 
 function on_service_return_cmd(session, cmd_buf){
     if(session.is_encrypt){
-        console.log("decrypt");
+        // console.log("decrypt");
         cmd_buf = proto_man.decrypt_cmd(cmd_buf);
     }
 

@@ -69,7 +69,7 @@ function decode_enter_talkroom(cmd_buf){
 function encode_user_enter_talkroom(stype, ctype, body){
     var uname_len = body.uname.utf8_byte_len();
     var total_len = proto_tools.header_size + 2 + uname_len + 2;
-    var cmd_buf = proto_tools.allocBuffer(total_len);
+    var cmd_buf = proto_tools.alloc_buffer(total_len);
     var offset = proto_tools.write_head_inbuf(cmd_buf, stype, ctype);
     offset = proto_tools.write_str_inbuf(cmd_buf, offset, body.uname, uname_len);
     proto_tools.write_int16(cmd_buf, offset, body.usex);
@@ -81,7 +81,7 @@ function encode_user_enter_talkroom(stype, ctype, body){
 function encode_user_exit_talkroom(stype, ctype, body){
     var uname_len = body.uname.utf8_byte_len();
     var total_len = proto_tools.header_size + 2 + uname_len + 2;
-    var cmd_buf = proto_tools.allocBuffer(total_len);
+    var cmd_buf = proto_tools.alloc_buffer(total_len);
     var offset = proto_tools.write_head_inbuf(cmd_buf, stype, ctype);
     offset = proto_tools.write_str_inbuf(cmd_buf, offset, body.uname, uname_len);
     proto_tools.write_int16(cmd_buf, offset, body.usex);
@@ -94,7 +94,7 @@ function encode_send_msg(stype, ctype, body){
     var uname_len = body[1].utf8_byte_len();
     var msg_len = body[3].utf8_byte_len();
     var total_len = proto_tools.header_size + 2 + 2 + uname_len + 2 + 2 + msg_len;
-    var cmd_buf = proto_tools.allocBuffer(total_len);
+    var cmd_buf = proto_tools.alloc_buffer(total_len);
     var offset = proto_tools.write_head_inbuf(cmd_buf, stype, ctype);
     proto_tools.write_int16(cmd_buf, offset, body[0]);
     offset += 2;
@@ -110,7 +110,7 @@ function encode_user_msg(stype, ctype, body){
     var uname_len = body[0].utf8_byte_len();
     var msg_len = body[2].utf8_byte_len();
     var total_len = proto_tools.header_size + 2 + uname_len + 2 + 2 + msg_len;
-    var cmd_buf = proto_tools.allocBuffer(total_len);
+    var cmd_buf = proto_tools.alloc_buffer(total_len);
     var offset = proto_tools.write_head_inbuf(cmd_buf, stype, ctype);
     offset = proto_tools.write_str_inbuf(cmd_buf, offset, body[0], uname_len);
     proto_tools.write_int16(cmd_buf, offset, body[1]);

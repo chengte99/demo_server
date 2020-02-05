@@ -1,5 +1,6 @@
 var Cmd = {
     USER_DISCONNECT: 10000,
+    BROADCAST: 10001,
 
     Auth: {
         GUEST_LOGIN: 1,

@@ -47,7 +47,7 @@ function write_float(cmd_buf, offset, value){
     cmd_buf.writeFloatLE(value, offset);
 }
 
-function allocBuffer(total_len){
+function alloc_buffer(total_len){
     return Buffer.allocUnsafe(total_len);
 }
 
@@ -89,7 +89,7 @@ function read_str_inbuf(cmd_buf, offset){
 
 function encode_empty_cmd(stype, ctype, body){
     var total_len = proto_tools.header_size;
-    var cmd_buf = allocBuffer(total_len);
+    var cmd_buf = alloc_buffer(total_len);
     write_head_inbuf(cmd_buf, stype, ctype);
     return cmd_buf;
 }
@@ -104,7 +104,7 @@ function decode_empty_cmd(cmd_buf){
 
 function encode_status_cmd(stype, ctype, body){
     var total_len = proto_tools.header_size + 2;
-    var cmd_buf = allocBuffer(total_len);
+    var cmd_buf = alloc_buffer(total_len);
     var offset = write_head_inbuf(cmd_buf, stype, ctype);
     write_int16(cmd_buf, offset, body);
     return cmd_buf;
@@ -121,7 +121,7 @@ function decode_status_cmd(cmd_buf){
 function encode_str_cmd(stype, ctype, body){
     var byte_len = body.utf8_byte_len();
     var total_len = proto_tools.header_size + 2 + byte_len;
-    var cmd_buf = allocBuffer(total_len);
+    var cmd_buf = alloc_buffer(total_len);
     var offset = write_head_inbuf(cmd_buf, stype, ctype);
     write_str_inbuf(cmd_buf, offset, body, byte_len);
     return cmd_buf;
@@ -155,7 +155,7 @@ var proto_tools = {
     read_str: read_str,
     write_str: write_str,
 
-    allocBuffer: allocBuffer,
+    alloc_buffer: alloc_buffer,
 
     //通用
     write_head_inbuf: write_head_inbuf,

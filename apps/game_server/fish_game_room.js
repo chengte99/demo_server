@@ -1,9 +1,10 @@
 var log = require("../../utils/log");
 var Cmd = require("../Cmd");
-var QuitReason = require("./QuitReason");
 var Stype = require("../Stype");
 var Response = require("../Response");
+var QuitReason = require("./QuitReason");
 var game_config = require("../game_config");
+var proto_man = require("../../netbus/proto_man");
 
 var INVIEW_SEAT = 20;
 var GAME_SEAT = 2;
@@ -21,9 +22,9 @@ function fish_game_room(room_id, conf){
     this.min_chip = conf.chip
 
     //init INVIEW_SEAT
-    this.inview_seats = [];
+    this.inview_players = [];
     for(var i = 0; i < INVIEW_SEAT; i ++){
-        this.inview_seats.push(null);
+        this.inview_players.push(null);
     }
 
     //init GAME_SEAT
@@ -31,6 +32,26 @@ function fish_game_room(room_id, conf){
     for(var i = 0; i < GAME_SEAT; i ++){
         this.game_seats.push(null);
     }
+}
+
+fish_game_room.prototype.search_empty_seat_inview_players = function(){
+    for(var i = 0; i < INVIEW_SEAT; i ++){
+        if(!this.inview_players[i]){
+            return i;
+        }
+    }
+
+    return -1;
+}
+
+fish_game_room.prototype.search_empty_seat = function(){
+    for(var i = 0; i < GAME_SEAT; i ++){
+        if(!this.game_seats[i]){
+            return i;
+        }
+    }
+
+    return -1;
 }
 
 fish_game_room.prototype.get_user_arrived = function(other){
@@ -57,7 +78,7 @@ fish_game_room.prototype.player_enter_room = function(player){
     }
 
     player.room_id = this.room_id;
-    this.inview_seats[inview_seat] = player;
+    this.inview_players[inview_seat] = player;
     player.enter_room(this);
 
     //通知該房間的用戶，如果有必要的話
@@ -119,37 +140,6 @@ fish_game_room.prototype.player_exit_room = function(player, quit_reason){
     return true;
 }
 
-fish_game_room.prototype.search_empty_seat_inview_players = function(){
-    for(var i = 0; i < INVIEW_SEAT; i ++){
-        if(!this.inview_seats[i]){
-            return i;
-        }
-    }
-
-    return -1;
-}
-
-fish_game_room.prototype.search_empty_seat = function(){
-    for(var i = 0; i < GAME_SEAT; i ++){
-        if(!this.game_seats[i]){
-            return i;
-        }
-    }
-
-    return -1;
-}
-
-fish_game_room.prototype.empty_seat = function(){
-    var num = 0;
-    for(var i in this.game_seats){
-        if(this.game_seats[i] === null){
-            num ++;
-        }
-    }
-
-    return num;
-}
-
 fish_game_room.prototype.do_sitdown = function(player){
     var sv_seat = this.search_empty_seat();
     if(sv_seat < 0){
@@ -169,8 +159,8 @@ fish_game_room.prototype.do_sitdown = function(player){
     player.send_cmd(Stype.FishGame, Cmd.FishGame.USER_SITDOWN, body);
 
     //廣播給座位上的人（包含旁觀）
-    // var body = this.get_user_arrived(player);
-    // this.room_broadcast(Stype.FishGame, Cmd.FishGame.USER_ARRIVED, body, player.uid);
+    var body = this.get_user_arrived(player);
+    this.room_broadcast(Stype.FishGame, Cmd.FishGame.USER_ARRIVED, body, player.uid);
     // 
 }
 
@@ -189,6 +179,17 @@ fish_game_room.prototype.do_standup = function(player){
     //站起，廣播給房間內的人(包括自己)
     // this.room_broadcast(Stype.FishGame, Cmd.FishGame.USER_STANDUP, body, null);
     //
+}
+
+fish_game_room.prototype.empty_seat = function(){
+    var num = 0;
+    for(var i in this.game_seats){
+        if(this.game_seats[i] === null){
+            num ++;
+        }
+    }
+
+    return num;
 }
 
 //根據旁觀者列表發送

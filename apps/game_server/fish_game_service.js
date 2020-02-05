@@ -3,6 +3,7 @@ var Cmd = require("../Cmd");
 var Stype = require("../Stype");
 var Response = require("../Response");
 var fish_game_model = require("./fish_game_model");
+require("../gateway/bc_proto");
 
 function enter_zone(session, body, utag, proto_type){
     if(!body){

@@ -1,4 +1,6 @@
 var Stype = {
+    Broadcast: 10001,
+
     TalkRoom: 1,
     Auth: 2,
 

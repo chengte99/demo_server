@@ -84,7 +84,7 @@ function session_send_encode_cmd(cmd){
     }
 
     if(this.is_encrypt){
-        console.log("encrypt");
+        // console.log("encrypt");
         cmd = proto_man.encrypt_cmd(cmd);
     }
     

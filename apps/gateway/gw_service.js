@@ -51,7 +51,6 @@ var service = {
             if(session.uid == 0){ //非登入命令必定有更新uid，因此若為0則為非法操作
                 return;
             }
-
             utag = session.uid;
         }
         
@@ -113,4 +112,5 @@ var service = {
     }
 }
 
+service.get_client_session_by_uid = get_client_session_by_uid;
 module.exports = service;
