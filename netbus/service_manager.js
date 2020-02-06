@@ -66,6 +66,8 @@ function on_client_lost_connect(session){
     }
 }
 
+// ------------------------------------------------------------------------
+
 function on_service_return_cmd(session, cmd_buf){
     if(session.is_encrypt){
         // console.log("decrypt");

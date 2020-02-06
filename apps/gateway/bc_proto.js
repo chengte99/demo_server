@@ -18,17 +18,17 @@ function encode_broadcast(stype, ctype, body){
     var total_len = proto_tool.header_size + (2 + cmd_buf_len) + (2 + users_num * 4);
     var cmd_buf = proto_tool.alloc_buffer(total_len);
     var offset = proto_tool.write_head_inbuf(cmd_buf, stype, ctype);
-    proto_tool.write_int16(cmd_buf, cmd_buf_len, offset);
+    proto_tool.write_int16(cmd_buf, offset, cmd_buf_len);
     offset += 2;
 
     body.cmd_buf.copy(cmd_buf, offset, 0, cmd_buf_len);
     offset += cmd_buf_len;
 
-    proto_tool.write_int16(cmd_buf, users_num, offset);
+    proto_tool.write_int16(cmd_buf, offset, users_num);
     offset += 2;
 
     for(var i in body.users){
-        proto_tool.write_uint32(cmd_buf, body.users[i], offset);
+        proto_tool.write_uint32(cmd_buf, offset, body.users[i]);
         offset += 4;
     }
 

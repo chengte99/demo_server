@@ -75,7 +75,7 @@ var service = {
                 if(prev_client_session){
                     // 重複登入
                     prev_client_session.send_cmd(stype, Cmd.Auth.RELOGIN, null, 0, prev_client_session.proto_type);
-                    // prev_client_session.uid = 0; // 這邊設定uid = 0則是不通知其他服務客戶已重複登入，若重複登入要剔除的話則這段不寫
+                    prev_client_session.uid = 0; // 這邊設定uid = 0則是不通知其他服務客戶已重複登入，若重複登入要剔除的話則這段不寫
                     netbus.session_close(prev_client_session); // 將先前登入的session關閉
                 }
 

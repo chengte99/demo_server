@@ -3,7 +3,6 @@ var netbus = require("../../netbus/netbus");
 var proto_man = require("../../netbus/proto_man");
 var service_manager = require("../../netbus/service_manager");
 var game_config = require("../game_config");
-
 var auth_service = require("./auth_service");
 var Stype = require("../Stype");
 
