@@ -1,3 +1,10 @@
+module.exports = {
+    enter_zone: enter_zone,
+    user_quit: user_quit,
+    user_disconnect: user_disconnect,
+    send_bullet: send_bullet,
+}
+
 var Stype = require("../Stype");
 var Cmd = require("../Cmd");
 var log = require("../../utils/log");
@@ -216,7 +223,7 @@ function do_user_quit(uid, quit_reason){
                 // console.log(room);
                 // console.log(player);
 
-                //若玩家正在房間內遊戲，則不退出
+                //若被動掉線時，玩家正在房間內遊戲，則不退出
                 if(!room.player_exit_room(player, quit_reason)){
                     return;
                 }
@@ -241,6 +248,18 @@ function do_user_quit(uid, quit_reason){
 function user_quit(uid, ret_func){
     do_user_quit(uid, QuitReason.UserQuit);
     ret_func(Response.OK);
+}
+
+function user_disconnect(uid){
+    do_user_quit(uid, QuitReason.UserLostConn);
+}
+
+function kick_user_for_chip_not_enough(uid){
+    do_user_quit(uid, QuitReason.NotEnough);
+}
+
+function kick_offine_player(uid){
+    do_user_quit(uid, QuitReason.SystemKick);
 }
 
 function send_bullet(uid, seat_id, level, ret_func){
@@ -268,10 +287,4 @@ function send_bullet(uid, seat_id, level, ret_func){
     }
 
     room.send_bullet(player, seat_id, level, ret_func);
-}
-
-module.exports = {
-    enter_zone: enter_zone,
-    user_quit: user_quit,
-    send_bullet: send_bullet,
 }

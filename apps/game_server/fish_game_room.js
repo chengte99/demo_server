@@ -177,7 +177,7 @@ fish_game_room.prototype.do_standup = function(player){
     }
     player.send_cmd(Stype.FishGame, Cmd.FishGame.USER_STANDUP, body);
     //站起，廣播給房間內的人(包括自己)
-    // this.room_broadcast(Stype.FishGame, Cmd.FishGame.USER_STANDUP, body, null);
+    this.room_broadcast(Stype.FishGame, Cmd.FishGame.USER_STANDUP, body, null);
     //
 }
 

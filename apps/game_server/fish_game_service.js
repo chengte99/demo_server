@@ -53,7 +53,9 @@ var service = {
             case Cmd.FishGame.SEND_BULLET:
                 send_bullet(session, body, utag, proto_type);
                 break;
-            
+            case Cmd.USER_DISCONNECT:
+                fish_game_model.user_disconnect(utag);
+            break;
         }
     },
 
