@@ -87,6 +87,18 @@ var game_config = {
             1: {zid: 2, name: "高級場", enter_vip: 0, chip: 2000, one_round_chip: 20, think_time: 15},
         },
 
+        fish_game_road: 5,
+
+        fish_game_fish_type_num: 6,
+        fish_game_fish_type: {
+            0: {id: 1, health: 30, speed: 100},
+            1: {id: 2, health: 50, speed: 200},
+            2: {id: 3, health: 80, speed: 100},
+            3: {id: 4, health: 100, speed: 100},
+            4: {id: 5, health: 120, speed: 100},
+            5: {id: 6, health: 150, speed: 100},
+        },
+
         bullet_level: {
             0: {level: 1, cost: 10, damage: 5, speed: 400},
             1: {level: 2, cost: 20, damage: 10, speed: 400},

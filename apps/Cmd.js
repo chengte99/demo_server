@@ -20,6 +20,7 @@ var Cmd = {
         USER_STANDUP: 6,
         USER_ARRIVED: 7,
         SEND_BULLET: 8,
+        PUT_FISH: 9,
     }
 }
 

@@ -5,9 +5,12 @@ var Response = require("../Response");
 var QuitReason = require("./QuitReason");
 var game_config = require("../game_config");
 var proto_man = require("../../netbus/proto_man");
+var State = require("./State");
 
 var INVIEW_SEAT = 20;
 var GAME_SEAT = 2;
+
+var Inroom_Fish_uid = 1;
 
 function write_err(status, ret_func){
     var ret = {};
@@ -162,6 +165,8 @@ fish_game_room.prototype.do_sitdown = function(player){
     var body = this.get_user_arrived(player);
     this.room_broadcast(Stype.FishGame, Cmd.FishGame.USER_ARRIVED, body, player.uid);
     // 
+
+    this.check_game_start();
 }
 
 fish_game_room.prototype.do_standup = function(player){
@@ -269,5 +274,74 @@ fish_game_room.prototype.send_bullet = function(player, seat_id, level, ret_func
 
     player.send_cmd(Stype.FishGame, Cmd.FishGame.SEND_BULLET, body);
 }
+
+fish_game_room.prototype.check_game_start = function(){
+    var ready_num = 0;
+    for(var i = 0; i < GAME_SEAT; i ++){
+        if(!this.game_seats[i]){
+            continue;
+        }
+
+        ready_num ++;
+    }
+
+    if(ready_num > 0){
+        this.game_start();        
+    }
+}
+
+var ROAD_SET = {
+    0: State.Idle,
+    1: State.Idle,
+    2: State.Idle,
+    3: State.Idle,
+    4: State.Idle,
+}
+
+fish_game_room.prototype.game_start = function(){
+    var s = Math.random() * 2 + 3;
+
+    // setTimeout(this.put_fish, s);
+    setTimeout(function(){
+        this.put_fish();
+    }.bind(this), s)
+}
+
+fish_game_room.prototype.put_fish = function(){
+    // 隨機挑選路線
+    var road_index = Math.floor(Math.random() * game_config.ugame_config.fish_game_road);
+    if(road_index >= game_config.ugame_config.fish_game_road){
+        road_index = game_config.ugame_config.fish_game_road - 1;
+    }
+    // 若路線已被使用則return
+    if(ROAD_SET[road_index] == State.Useing){
+        return false;
+    }
+    
+    ROAD_SET[road_index] = State.Useing;
+
+    // 隨機挑選魚種類
+    var index = Math.floor(Math.random() * game_config.ugame_config.fish_game_fish_type_num);
+    if(index >= game_config.ugame_config.fish_game_fish_type_num){
+        index = game_config.ugame_config.fish_game_fish_type_num - 1;
+    }
+
+    var ret = game_config.ugame_config.fish_game_fish_type[index];
+
+    var body = {
+        0: ret.id,
+        1: ret.health,
+        2: ret.speed,
+        3: road_index,
+        4: Inroom_Fish_uid,
+    }
+
+    // 房間內魚編號(遞增不重複)
+    Inroom_Fish_uid ++;
+
+    // 廣播
+    this.room_broadcast(Stype.FishGame, Cmd.FishGame.PUT_FISH, body, null);
+}
+
 
 module.exports = fish_game_room;

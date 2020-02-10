@@ -79,3 +79,15 @@ SEND_BULLET
     5: speed, (16)
 }
 */
+
+/*
+PUT_FISH
+服務端發送
+4 9 body = {
+    0: id, (16)
+    1: health, (16)
+    2: speed, (16)
+    3: road_index, (16)
+    4: inroom_uid, (32)
+}
+*/

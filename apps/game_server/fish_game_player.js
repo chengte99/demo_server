@@ -51,7 +51,6 @@ fish_game_player.prototype.exit_room = function(room){
         }
     })
     // redis_game.add_ugame_info_uchip(this.uid, cost, false);
-
 }
 
 fish_game_player.prototype.sit_down = function(room){
