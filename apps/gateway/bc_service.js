@@ -12,7 +12,7 @@ var service = {
 
     //收到我們連接的服務給我們的數據
     on_service_recv_cmd: function(session, stype, ctype, body, utag, proto_type, raw_cmd){
-        console.log("bc_service body ...", body);
+        // console.log("bc_service body ...", body);
         var cmd_buf = body.cmd_buf;
         var users = body.users;
         for(var i in users){

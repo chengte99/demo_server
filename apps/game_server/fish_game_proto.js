@@ -91,3 +91,32 @@ PUT_FISH
     4: inroom_uid, (32)
 }
 */
+
+/*
+DO_READY
+客戶端發送
+4 10 null
+服務端發送
+4 10 body = {
+    0: status, (16)
+    1: seat_id, (16)
+}
+*/
+
+/*
+RECOVER_FISH
+客戶端發送
+4 11 body = {
+    0: id, (16)
+    1: health, (16)
+    2: road_index, (16)
+    3: inroom_uid, (32)
+    4: seai_id (16)
+}
+服務端發送
+4 11 body = {
+    0: status, (16)
+    1: seat_id, (16)
+    2: uchip, (16)
+}
+*/

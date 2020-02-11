@@ -87,16 +87,16 @@ var game_config = {
             1: {zid: 2, name: "高級場", enter_vip: 0, chip: 2000, one_round_chip: 20, think_time: 15},
         },
 
-        fish_game_road: 5,
+        fish_game_road_max: 10,
 
-        fish_game_fish_type_num: 6,
+        fish_game_fish_type_max: 6,
         fish_game_fish_type: {
-            0: {id: 1, health: 30, speed: 100},
-            1: {id: 2, health: 50, speed: 200},
-            2: {id: 3, health: 80, speed: 100},
-            3: {id: 4, health: 100, speed: 100},
-            4: {id: 5, health: 120, speed: 100},
-            5: {id: 6, health: 150, speed: 100},
+            0: {id: 1, health: 30, speed: 50},
+            1: {id: 2, health: 50, speed: 100},
+            2: {id: 3, health: 80, speed: 50},
+            3: {id: 4, health: 100, speed: 50},
+            4: {id: 5, health: 120, speed: 50},
+            5: {id: 6, health: 150, speed: 50},
         },
 
         bullet_level: {

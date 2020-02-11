@@ -6,9 +6,11 @@ var QuitReason = require("./QuitReason");
 var game_config = require("../game_config");
 var proto_man = require("../../netbus/proto_man");
 var State = require("./State");
+var fish_game_road = require("./fish_game_road");
 
 var INVIEW_SEAT = 20;
 var GAME_SEAT = 2;
+var ROAD_SET = 16;
 
 var Inroom_Fish_uid = 1;
 
@@ -22,7 +24,8 @@ function fish_game_room(room_id, conf){
     this.room_id = room_id;
     this.zid = conf.zid;
     this.enter_vip = conf.enter_vip;
-    this.min_chip = conf.chip
+    this.min_chip = conf.chip;
+    this.state = State.Ready;
 
     //init INVIEW_SEAT
     this.inview_players = [];
@@ -111,7 +114,7 @@ fish_game_room.prototype.player_enter_room = function(player){
 }
 
 fish_game_room.prototype.player_exit_room = function(player, quit_reason){
-    if(quit_reason == QuitReason.UserLostConn){
+    if(quit_reason == QuitReason.UserLostConn && this.state == State.Playing && player.state == State.Playing){
         return false;
     }
 
@@ -164,9 +167,7 @@ fish_game_room.prototype.do_sitdown = function(player){
     //廣播給座位上的人（包含旁觀）
     var body = this.get_user_arrived(player);
     this.room_broadcast(Stype.FishGame, Cmd.FishGame.USER_ARRIVED, body, player.uid);
-    // 
-
-    this.check_game_start();
+    //
 }
 
 fish_game_room.prototype.do_standup = function(player){
@@ -261,7 +262,7 @@ fish_game_room.prototype.send_bullet = function(player, seat_id, level, ret_func
     }
 
     // 更新uchip數據
-    player.send_bullet(cost);
+    player.update_uchip(cost, false);
 
     var body = {
         0: Response.OK,
@@ -278,7 +279,7 @@ fish_game_room.prototype.send_bullet = function(player, seat_id, level, ret_func
 fish_game_room.prototype.check_game_start = function(){
     var ready_num = 0;
     for(var i = 0; i < GAME_SEAT; i ++){
-        if(!this.game_seats[i]){
+        if(!this.game_seats[i] || this.game_seats[i].state != State.Ready){
             continue;
         }
 
@@ -290,40 +291,40 @@ fish_game_room.prototype.check_game_start = function(){
     }
 }
 
-var ROAD_SET = {
-    0: State.Idle,
-    1: State.Idle,
-    2: State.Idle,
-    3: State.Idle,
-    4: State.Idle,
-}
-
 fish_game_room.prototype.game_start = function(){
-    var s = Math.random() * 2 + 3;
+    // 改變房間狀態
+    this.state = State.Playing;
+    
+    // 產生魚行走路徑
+    this.road_set = [];
+    for(var i = 0; i < ROAD_SET; i ++){
+        var road = new fish_game_road(i);
+        this.road_set.push(road);
+    }
 
-    // setTimeout(this.put_fish, s);
-    setTimeout(function(){
+    // 定時每三秒產生一隻魚
+    setInterval(function(){
         this.put_fish();
-    }.bind(this), s)
+    }.bind(this), 3000);
 }
 
 fish_game_room.prototype.put_fish = function(){
     // 隨機挑選路線
-    var road_index = Math.floor(Math.random() * game_config.ugame_config.fish_game_road);
-    if(road_index >= game_config.ugame_config.fish_game_road){
-        road_index = game_config.ugame_config.fish_game_road - 1;
+    var road_index = Math.floor(Math.random() * ROAD_SET);
+    if(road_index >= ROAD_SET){
+        road_index = ROAD_SET - 1;
     }
     // 若路線已被使用則return
-    if(ROAD_SET[road_index] == State.Useing){
-        return false;
+    if(this.road_set[road_index].state == State.Road_Useing){
+        return;
     }
     
-    ROAD_SET[road_index] = State.Useing;
+    this.road_set[road_index].state = State.Road_Useing;
 
     // 隨機挑選魚種類
-    var index = Math.floor(Math.random() * game_config.ugame_config.fish_game_fish_type_num);
-    if(index >= game_config.ugame_config.fish_game_fish_type_num){
-        index = game_config.ugame_config.fish_game_fish_type_num - 1;
+    var index = Math.floor(Math.random() * game_config.ugame_config.fish_game_fish_type_max);
+    if(index >= game_config.ugame_config.fish_game_fish_type_max){
+        index = game_config.ugame_config.fish_game_fish_type_max - 1;
     }
 
     var ret = game_config.ugame_config.fish_game_fish_type[index];
@@ -343,5 +344,47 @@ fish_game_room.prototype.put_fish = function(){
     this.room_broadcast(Stype.FishGame, Cmd.FishGame.PUT_FISH, body, null);
 }
 
+fish_game_room.prototype.do_ready = function(player, ret_func){
+    if(player != this.game_seats[player.seat_id]){
+        write_err(Response.INVAILD_OPT, ret_func);
+        return;
+    }
+
+    if(player.state != State.InView || this.state != State.Ready){
+        write_err(Response.INVAILD_OPT, ret_func);
+        return;
+    }
+
+    player.do_ready();
+    // 廣播給房間內所有用戶
+    var body = {
+        0: Response.OK,
+        1: player.seat_id,
+    }
+
+    this.room_broadcast(Stype.FishGame, Cmd.FishGame.DO_READY, body, null);
+
+    //check ready's player number
+    this.check_game_start();
+}
+
+fish_game_room.prototype.recover_fish = function(player, bonus, road_index, seat_id, ret_func){
+    // 將該road設為閒置
+    this.road_set[road_index].state = State.Road_Idle;
+
+    // 更新uchip數據
+    player.update_uchip(bonus, true);
+
+    var body = {
+        0: Response.OK,
+        1: seat_id,
+        2: player.uchip,
+    }
+
+    player.send_cmd(Stype.FishGame, Cmd.FishGame.RECOVER_FISH, body);
+
+    // 廣播其他用戶
+    this.room_broadcast(Stype.FishGame, Cmd.FishGame.RECOVER_FISH, body, player.uid);
+}
 
 module.exports = fish_game_room;

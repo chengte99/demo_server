@@ -3,6 +3,7 @@ module.exports = {
     user_quit: user_quit,
     user_disconnect: user_disconnect,
     send_bullet: send_bullet,
+    do_ready: do_ready,
 }
 
 var Stype = require("../Stype");
@@ -287,4 +288,58 @@ function send_bullet(uid, seat_id, level, ret_func){
     }
 
     room.send_bullet(player, seat_id, level, ret_func);
+}
+
+function do_ready(uid, ret_func){
+    var player = get_player(uid);
+    if(!player){
+        write_err(Response.INVAILD_OPT, ret_func);
+        return;
+    }
+
+    if(player.zid === -1 || player.room_id === -1){
+        write_err(Response.INVAILD_OPT, ret_func);
+        return;
+    }
+
+    var zone = zones[player.zid];
+    if(!zone){
+        write_err(Response.INVAILD_OPT, ret_func);
+        return;
+    }
+
+    var room = zone.room_list[player.room_id];
+    if(!room){
+        write_err(Response.INVAILD_OPT, ret_func);
+        return;
+    }
+
+    room.do_ready(player, ret_func);
+}
+
+function recover_fish(uid, bonus, road_index, seat_id, ret_func){
+    var player = get_player(uid);
+    if(!player){
+        write_err(Response.INVAILD_OPT, ret_func);
+        return;
+    }
+
+    if(player.zid === -1 || player.room_id === -1){
+        write_err(Response.INVAILD_OPT, ret_func);
+        return;
+    }
+
+    var zone = zones[player.zid];
+    if(!zone){
+        write_err(Response.INVAILD_OPT, ret_func);
+        return;
+    }
+
+    var room = zone.room_list[player.room_id];
+    if(!room){
+        write_err(Response.INVAILD_OPT, ret_func);
+        return;
+    }
+
+    room.recover_fish(player, ret_func);
 }
