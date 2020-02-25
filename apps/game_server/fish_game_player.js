@@ -65,6 +65,10 @@ fish_game_player.prototype.stand_up = function(){
     
 }
 
+fish_game_player.prototype.on_game_start = function(){
+    this.state = State.Playing;
+}
+
 fish_game_player.prototype.send_cmd = function(stype, ctype, body){
     if(!this.session){
         log.warn("session is null, send_cmd failed");

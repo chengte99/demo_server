@@ -4,6 +4,7 @@ module.exports = {
     user_disconnect: user_disconnect,
     send_bullet: send_bullet,
     do_ready: do_ready,
+    recover_fish: recover_fish,
 }
 
 var Stype = require("../Stype");
@@ -137,8 +138,14 @@ function enter_zone(uid, zid, session, proto_type, ret_func){
     }else{
         log.info("player exist ...");
         if(player.zid != -1 && player.room_id != -1){
-            // 已在房間內
+            var zone = zones[player.zid];
+            var room = zone.room_list[player.room_id];
 
+            //把斷線player的session 恢復 
+            player.init_session(session, proto_type);
+            //將當前房間數據傳給客戶端，回到遊戲
+            room.do_reconnect(player);
+            
         }else{
             player_enter_zone(uid, zid, player, ret_func);
         }
@@ -341,5 +348,5 @@ function recover_fish(uid, bonus, road_index, seat_id, ret_func){
         return;
     }
 
-    room.recover_fish(player, ret_func);
+    room.recover_fish(player, bonus, road_index, seat_id, ret_func);
 }

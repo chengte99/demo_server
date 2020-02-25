@@ -59,6 +59,7 @@ USER_ARRIVED
     4: uchip,
     5: uexp,
     6: uvip,
+    7: state,
 }
 */
 
@@ -97,10 +98,7 @@ DO_READY
 客戶端發送
 4 10 null
 服務端發送
-4 10 body = {
-    0: status, (16)
-    1: seat_id, (16)
-}
+4 10 status
 */
 
 /*
@@ -117,6 +115,17 @@ RECOVER_FISH
 4 11 body = {
     0: status, (16)
     1: seat_id, (16)
-    2: uchip, (16)
+    2: road_index, (16)
+    3: bonus, (16)
+}
+*/
+
+/*
+RECONNECT
+服務端發送
+4 12 body = {
+    0: seat_id, 
+    1: arrived_data, 已抵達的座位數據 []
+    2: room_id
 }
 */

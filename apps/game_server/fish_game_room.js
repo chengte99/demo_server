@@ -8,7 +8,7 @@ var proto_man = require("../../netbus/proto_man");
 var State = require("./State");
 var fish_game_road = require("./fish_game_road");
 
-var INVIEW_SEAT = 20;
+var INVIEW_SEAT = 10;
 var GAME_SEAT = 2;
 var ROAD_SET = 16;
 
@@ -71,7 +71,7 @@ fish_game_room.prototype.get_user_arrived = function(other){
         4: other.uchip,
         5: other.uexp,
         6: other.uvip,
-        // 7: other.state,
+        7: other.state,
     }
     return body;
 }
@@ -274,6 +274,9 @@ fish_game_room.prototype.send_bullet = function(player, seat_id, level, ret_func
     }
 
     player.send_cmd(Stype.FishGame, Cmd.FishGame.SEND_BULLET, body);
+
+    // 廣播其他用戶
+    this.room_broadcast(Stype.FishGame, Cmd.FishGame.SEND_BULLET, body, player.uid);
 }
 
 fish_game_room.prototype.check_game_start = function(){
@@ -282,7 +285,6 @@ fish_game_room.prototype.check_game_start = function(){
         if(!this.game_seats[i] || this.game_seats[i].state != State.Ready){
             continue;
         }
-
         ready_num ++;
     }
 
@@ -294,6 +296,14 @@ fish_game_room.prototype.check_game_start = function(){
 fish_game_room.prototype.game_start = function(){
     // 改變房間狀態
     this.state = State.Playing;
+
+    //改變位置上玩家的狀態
+    for(var i = 0; i < GAME_SEAT; i ++){
+        if(!this.game_seats[i] || this.game_seats[i].state != State.Ready){
+            continue;
+        }
+        this.game_seats[i].on_game_start();
+    }
     
     // 產生魚行走路徑
     this.road_set = [];
@@ -318,7 +328,6 @@ fish_game_room.prototype.put_fish = function(){
     if(this.road_set[road_index].state == State.Road_Useing){
         return;
     }
-    
     this.road_set[road_index].state = State.Road_Useing;
 
     // 隨機挑選魚種類
@@ -350,41 +359,80 @@ fish_game_room.prototype.do_ready = function(player, ret_func){
         return;
     }
 
-    if(player.state != State.InView || this.state != State.Ready){
+    if(player.state != State.InView){
         write_err(Response.INVAILD_OPT, ret_func);
         return;
     }
 
     player.do_ready();
-    // 廣播給房間內所有用戶
-    var body = {
-        0: Response.OK,
-        1: player.seat_id,
-    }
-
-    this.room_broadcast(Stype.FishGame, Cmd.FishGame.DO_READY, body, null);
+    
+    // var body = {
+    //     0: Response.OK,
+    //     1: player.seat_id,
+    // }
+    // this.room_broadcast(Stype.FishGame, Cmd.FishGame.DO_READY, body, null);
+    player.send_cmd(Stype.FishGame, Cmd.FishGame.DO_READY, Response.OK);
 
     //check ready's player number
-    this.check_game_start();
+    if(this.state != State.Playing){
+        this.check_game_start();
+    }else{
+        player.on_game_start();
+    }
 }
 
 fish_game_room.prototype.recover_fish = function(player, bonus, road_index, seat_id, ret_func){
     // 將該road設為閒置
+    if(this.road_set[road_index].state == State.Road_Idle){
+        return;
+    }
     this.road_set[road_index].state = State.Road_Idle;
 
     // 更新uchip數據
-    player.update_uchip(bonus, true);
+    if(seat_id != -1){
+        // 由座位上user殺死的
+        player.update_uchip(bonus, true);
+    }
 
     var body = {
         0: Response.OK,
         1: seat_id,
-        2: player.uchip,
+        2: road_index,
+        3: bonus,
     }
 
     player.send_cmd(Stype.FishGame, Cmd.FishGame.RECOVER_FISH, body);
 
     // 廣播其他用戶
     this.room_broadcast(Stype.FishGame, Cmd.FishGame.RECOVER_FISH, body, player.uid);
+}
+
+fish_game_room.prototype.do_reconnect = function(p){
+    if(p.session == null || p.state != State.Playing || this.state != State.Playing){
+        return
+    }
+
+    //自己的座位號
+    //p.seat_id
+
+    //已抵達座位上的數據
+    var arrived_data = [];
+    for(var i = 0; i < GAME_SEAT; i ++){
+        if(!this.game_seats[i] || this.game_seats[i] == p || this.game_seats[i].state != State.Playing){
+            continue;
+        }
+
+        var user_info = this.get_user_arrived(this.game_seats[i]);
+        arrived_data.push(user_info);
+    }
+
+    var body = {
+        0: p.seat_id,
+        1: arrived_data,
+        2: p.room_id
+    }
+
+    p.send_cmd(Stype.FishGame, Cmd.FishGame.RECONNECT, body);
 }
 
 module.exports = fish_game_room;
