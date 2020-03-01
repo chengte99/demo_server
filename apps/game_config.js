@@ -80,7 +80,7 @@ var game_config = {
 
     ugame_config: {
         first_uexp: 1000,
-        first_uchip: 1000,
+        first_uchip: 20000,
 
         fish_game_zone: {
             0: {zid: 1, name: "初級場", enter_vip: 0, chip: 1000, one_round_chip: 20, think_time: 15},
