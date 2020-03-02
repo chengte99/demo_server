@@ -271,7 +271,7 @@ function kick_offine_player(uid){
     do_user_quit(uid, QuitReason.SystemKick);
 }
 
-function send_bullet(uid, seat_id, level, ret_func){
+function send_bullet(uid, seat_id, level, road_index, ret_func){
     var player = get_player(uid);
     if(!player){
         write_err(Response.INVAILD_OPT, ret_func);
@@ -295,7 +295,7 @@ function send_bullet(uid, seat_id, level, ret_func){
         return;
     }
 
-    room.send_bullet(player, seat_id, level, ret_func);
+    room.send_bullet(player, seat_id, level, road_index, ret_func);
 }
 
 function do_ready(uid, ret_func){

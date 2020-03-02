@@ -69,15 +69,17 @@ SEND_BULLET
 4 8 body = {
     0: seat_id, (16)
     1: level, (16)
+    2: road_index (16)
 }
 服務端發送
 4 8 body = {
     0: status, (16)
     1: seat_id, (16)
     2: level, (16)
-    3: cost, (16)
+    3: p.uchip, (16)
     4: damage, (16)
     5: speed, (16)
+    6: road_index, (16)
 }
 */
 
@@ -116,7 +118,7 @@ RECOVER_FISH
     0: status, (16)
     1: seat_id, (16)
     2: road_index, (16)
-    3: bonus, (16)
+    3: p.uchip, (16)
 }
 */
 

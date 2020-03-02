@@ -286,7 +286,7 @@ fish_game_room.prototype.room_broadcast = function(stype, ctype, body, not_to_ui
     }
 }
 
-fish_game_room.prototype.send_bullet = function(player, seat_id, level, ret_func){
+fish_game_room.prototype.send_bullet = function(player, seat_id, level, road_index, ret_func){
     if(level <= 0 || level > 2){
         write_err(Response.INVAILD_PARAMS, ret_func);
         return;
@@ -309,9 +309,10 @@ fish_game_room.prototype.send_bullet = function(player, seat_id, level, ret_func
         0: Response.OK,
         1: seat_id,
         2: level,
-        3: -cost,
+        3: player.uchip,
         4: damage,
         5: speed,
+        6: road_index,
     }
 
     player.send_cmd(Stype.FishGame, Cmd.FishGame.SEND_BULLET, body);
@@ -450,7 +451,7 @@ fish_game_room.prototype.recover_fish = function(player, bonus, road_index, seat
         0: Response.OK,
         1: seat_id,
         2: road_index,
-        3: bonus,
+        3: player.uchip,
     }
 
     player.send_cmd(Stype.FishGame, Cmd.FishGame.RECOVER_FISH, body);

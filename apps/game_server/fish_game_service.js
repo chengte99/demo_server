@@ -30,8 +30,9 @@ function send_bullet(session, body, utag, proto_type){
 
     var seat_id = body[0];
     var level = body[1];
+    var road_index = body[2];
 
-    fish_game_model.send_bullet(utag, seat_id, level, function(ret){
+    fish_game_model.send_bullet(utag, seat_id, level, road_index, function(ret){
         session.send_cmd(Stype.FishGame, Cmd.FishGame.SEND_BULLET, ret, utag, proto_type);
     });
 }
