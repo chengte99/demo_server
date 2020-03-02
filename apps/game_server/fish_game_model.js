@@ -5,6 +5,7 @@ module.exports = {
     send_bullet: send_bullet,
     do_ready: do_ready,
     recover_fish: recover_fish,
+    kick_offine_player: kick_offine_player,
 }
 
 var Stype = require("../Stype");

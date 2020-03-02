@@ -7,8 +7,9 @@ var game_config = require("../game_config");
 var proto_man = require("../../netbus/proto_man");
 var State = require("./State");
 var fish_game_road = require("./fish_game_road");
+var fish_game_model = require("./fish_game_model");
 
-var INVIEW_SEAT = 10;
+var INVIEW_SEAT = 4;
 var GAME_SEAT = 2;
 var ROAD_SET = 16;
 
@@ -38,6 +39,47 @@ function fish_game_room(room_id, conf){
     for(var i = 0; i < GAME_SEAT; i ++){
         this.game_seats.push(null);
     }
+
+    // 產生魚行走路徑
+    this.road_set = [];
+    for(var i = 0; i < ROAD_SET; i ++){
+        var road = new fish_game_road(i);
+        this.road_set.push(road);
+    }
+
+    // 每2s檢查房間狀態決定放魚
+    setInterval(function(){
+        if(this.state == State.Playing){
+            if (this.check_game_seats_state()){
+                this.put_fish();
+            }
+        }
+    }.bind(this), 2000);
+
+    // 每60s踢出已斷線玩家
+    setInterval(function(){
+        this.kick_lostconnection_users();
+    }.bind(this), 60000);
+}
+
+fish_game_room.prototype.kick_lostconnection_users = function(){
+    // var empty_num = 0;
+    for(var i = 0; i < GAME_SEAT; i ++){
+        if(this.game_seats[i] && this.game_seats[i].state == State.Playing && this.game_seats[i].session == null){
+            log.info("該玩家已斷線 ...");
+            // 系統踢出
+            fish_game_model.kick_offine_player(this.game_seats[i].uid);
+        }
+    }
+
+    // if(empty_num == GAME_SEAT){
+    //     this.state = State.Ready;
+    //     log.info("座位上均已斷線，房間狀態改為Ready ...");
+    //     // 回收所有魚(將路線全改成Idle)
+    //     for(var i = 0; i < ROAD_SET; i ++){
+    //         this.road_set[i].state = State.Road_Idle;    
+    //     }
+    // }
 }
 
 fish_game_room.prototype.search_empty_seat_inview_players = function(){
@@ -181,7 +223,6 @@ fish_game_room.prototype.do_standup = function(player){
         0: Response.OK,
         1: sv_seat
     }
-    player.send_cmd(Stype.FishGame, Cmd.FishGame.USER_STANDUP, body);
     //站起，廣播給房間內的人(包括自己)
     this.room_broadcast(Stype.FishGame, Cmd.FishGame.USER_STANDUP, body, null);
     //
@@ -279,6 +320,24 @@ fish_game_room.prototype.send_bullet = function(player, seat_id, level, ret_func
     this.room_broadcast(Stype.FishGame, Cmd.FishGame.SEND_BULLET, body, player.uid);
 }
 
+fish_game_room.prototype.check_game_seats_state = function(){
+    for(var i = 0; i < GAME_SEAT; i ++){
+        if(this.game_seats[i] && this.game_seats[i].state == State.Playing){
+            log.info("someone is playing ...");
+            return true;
+        }
+    }
+
+    log.info("noone is playing ...");
+    this.state = State.Ready;
+    
+    // 回收所有魚(將路線全改成Idle)
+    for(var i = 0; i < ROAD_SET; i ++){
+        this.road_set[i].state = State.Road_Idle;    
+    }
+    return false;
+}
+
 fish_game_room.prototype.check_game_start = function(){
     var ready_num = 0;
     for(var i = 0; i < GAME_SEAT; i ++){
@@ -294,9 +353,6 @@ fish_game_room.prototype.check_game_start = function(){
 }
 
 fish_game_room.prototype.game_start = function(){
-    // 改變房間狀態
-    this.state = State.Playing;
-
     //改變位置上玩家的狀態
     for(var i = 0; i < GAME_SEAT; i ++){
         if(!this.game_seats[i] || this.game_seats[i].state != State.Ready){
@@ -304,18 +360,14 @@ fish_game_room.prototype.game_start = function(){
         }
         this.game_seats[i].on_game_start();
     }
-    
-    // 產生魚行走路徑
-    this.road_set = [];
-    for(var i = 0; i < ROAD_SET; i ++){
-        var road = new fish_game_road(i);
-        this.road_set.push(road);
-    }
 
-    // 定時每三秒產生一隻魚
-    setInterval(function(){
-        this.put_fish();
-    }.bind(this), 3000);
+    // 改變房間狀態
+    this.state = State.Playing;
+
+    // // 定時每三秒產生一隻魚
+    // setInterval(function(){
+    //     this.put_fish();
+    // }.bind(this), 3000);
 }
 
 fish_game_room.prototype.put_fish = function(){
