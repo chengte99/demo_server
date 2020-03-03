@@ -11,7 +11,7 @@ var fish_game_model = require("./fish_game_model");
 
 var INVIEW_SEAT = 4;
 var GAME_SEAT = 2;
-var ROAD_SET = 16;
+var ROAD_SET = 55;
 
 var Inroom_Fish_uid = 1;
 
@@ -47,14 +47,14 @@ function fish_game_room(room_id, conf){
         this.road_set.push(road);
     }
 
-    // 每2s檢查房間狀態決定放魚
+    // 每1.5s檢查房間狀態決定放魚
     setInterval(function(){
         if(this.state == State.Playing){
             if (this.check_game_seats_state()){
                 this.put_fish();
             }
         }
-    }.bind(this), 2000);
+    }.bind(this), 1500);
 
     // 每60s踢出已斷線玩家
     setInterval(function(){
@@ -66,20 +66,11 @@ fish_game_room.prototype.kick_lostconnection_users = function(){
     // var empty_num = 0;
     for(var i = 0; i < GAME_SEAT; i ++){
         if(this.game_seats[i] && this.game_seats[i].state == State.Playing && this.game_seats[i].session == null){
-            log.info("該玩家已斷線 ...");
+            log.info("該玩家uid " + this.game_seats[i].uid + " 已斷線，系統踢出 ...");
             // 系統踢出
             fish_game_model.kick_offine_player(this.game_seats[i].uid);
         }
     }
-
-    // if(empty_num == GAME_SEAT){
-    //     this.state = State.Ready;
-    //     log.info("座位上均已斷線，房間狀態改為Ready ...");
-    //     // 回收所有魚(將路線全改成Idle)
-    //     for(var i = 0; i < ROAD_SET; i ++){
-    //         this.road_set[i].state = State.Road_Idle;    
-    //     }
-    // }
 }
 
 fish_game_room.prototype.search_empty_seat_inview_players = function(){
@@ -324,12 +315,12 @@ fish_game_room.prototype.send_bullet = function(player, seat_id, level, road_ind
 fish_game_room.prototype.check_game_seats_state = function(){
     for(var i = 0; i < GAME_SEAT; i ++){
         if(this.game_seats[i] && this.game_seats[i].state == State.Playing){
-            log.info("someone is playing ...");
+            // log.info("someone is playing ...");
             return true;
         }
     }
 
-    log.info("noone is playing ...");
+    log.info("no one is playing ...");
     this.state = State.Ready;
     
     // 回收所有魚(將路線全改成Idle)
@@ -364,11 +355,6 @@ fish_game_room.prototype.game_start = function(){
 
     // 改變房間狀態
     this.state = State.Playing;
-
-    // // 定時每三秒產生一隻魚
-    // setInterval(function(){
-    //     this.put_fish();
-    // }.bind(this), 3000);
 }
 
 fish_game_room.prototype.put_fish = function(){
