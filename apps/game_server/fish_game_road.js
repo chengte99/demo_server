@@ -8,6 +8,7 @@ var State = require("./State");
 function fish_game_road(index){
     this.road_index = index;
     this.state = State.Road_Idle;
+    this.fish = null;
 }
 
 module.exports = fish_game_road;

@@ -1,4 +1,5 @@
 var log = require("../../utils/log");
+var utils = require("../../utils/utils");
 var Cmd = require("../Cmd");
 var Stype = require("../Stype");
 var Response = require("../Response");
@@ -58,8 +59,32 @@ function fish_game_room(room_id, conf){
 
     // 每60s踢出已斷線玩家
     setInterval(function(){
-        this.kick_lostconnection_users();
+        if(this.state == State.Playing){
+            this.kick_lostconnection_users();
+        }
     }.bind(this), 60000);
+
+    // 每10s檢查是否有超過一分鐘未回收的魚
+    setInterval(function(){
+        if(this.state == State.Playing){
+            this.kill_unuse_fish();
+        }
+    }.bind(this), 10000);
+}
+
+fish_game_room.prototype.kill_unuse_fish = function(){
+    for(var i = 0; i < ROAD_SET; i ++){
+        if(this.road_set[i].state != State.Road_Useing){
+            continue;
+        }
+
+        if((utils.timestamp() - this.road_set[i].fish[5]) >= 60){
+            // 若该路径上的鱼距当前時間大於2分鐘，清除該路徑上的魚，狀態改為Idle
+            // log.info("road_index: " + i + " 路徑上的魚已超過1分鐘，執行回收 ...");
+            this.road_set[i].state = State.Road_Idle;
+            this.road_set[i].fish = null;
+        }
+    }
 }
 
 fish_game_room.prototype.kick_lostconnection_users = function(){
@@ -325,7 +350,8 @@ fish_game_room.prototype.check_game_seats_state = function(){
     
     // 回收所有魚(將路線全改成Idle)
     for(var i = 0; i < ROAD_SET; i ++){
-        this.road_set[i].state = State.Road_Idle;    
+        this.road_set[i].state = State.Road_Idle;
+        this.road_set[i].fish = null;
     }
     return false;
 }
@@ -377,16 +403,25 @@ fish_game_room.prototype.put_fish = function(){
 
     var ret = game_config.ugame_config.fish_game_fish_type[index];
 
+    // 紀錄魚產生時間
+    var create_timestamp = utils.timestamp();
+
     var body = {
         0: ret.id,
         1: ret.health,
         2: ret.speed,
         3: road_index,
         4: Inroom_Fish_uid,
+        5: create_timestamp,
     }
 
     // 房間內魚編號(遞增不重複)
     Inroom_Fish_uid ++;
+
+    // 將儲存該路徑上的魚
+    this.road_set[road_index].fish = body;
+
+    // log.info("road_index: " + road_index + " 路徑已放上魚 ...");
 
     // 廣播
     this.room_broadcast(Stype.FishGame, Cmd.FishGame.PUT_FISH, body, null);
@@ -426,6 +461,7 @@ fish_game_room.prototype.recover_fish = function(player, bonus, road_index, seat
         return;
     }
     this.road_set[road_index].state = State.Road_Idle;
+    this.road_set[road_index].fish = null;
 
     // 更新uchip數據
     if(seat_id != -1){

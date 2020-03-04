@@ -92,6 +92,7 @@ PUT_FISH
     2: speed, (16)
     3: road_index, (16)
     4: inroom_uid, (32)
+    5: create_timestamp (16)
 }
 */
 

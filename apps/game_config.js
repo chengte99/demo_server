@@ -87,8 +87,6 @@ var game_config = {
             1: {zid: 2, name: "高級場", enter_vip: 0, chip: 2000, one_round_chip: 20, think_time: 15},
         },
 
-        fish_game_road_max: 10,
-
         fish_game_fish_type_max: 6,
         fish_game_fish_type: {
             0: {id: 1, health: 30, speed: 50},
