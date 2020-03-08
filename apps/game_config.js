@@ -1,56 +1,68 @@
 var Stype = require("./Stype");
+var HOST_IP = "127.0.0.1";
 
 var game_config = {
+    GATEWAY_CONNECT_IP: "47.92.0.77",
+
     gateway_config: {
-        host: "127.0.0.1",
+        host: "HOST_IP",
         ports: [6080, 6081],
     },
 
     center_server_config: {
-        host: "127.0.0.1",
+        host: "HOST_IP",
         port: 6086,
         stypes: [Stype.Auth],
     },
 
     system_server_config: {
-        host: "127.0.0.1",
+        host: "HOST_IP",
         port: 6087,
     },
 
     game_server_config: {
-        host: "127.0.0.1",
+        host: "HOST_IP",
         port: 6088,
     },
 
+    webserver_config: {
+        host: "HOST_IP",
+        port: 10001,
+    },
+
     talkroom_config: {
-        host: "127.0.0.1",
+        host: "HOST_IP",
         port: 6084,
     },
 
     center_database: {
-        host: "127.0.0.1",
+        host: "HOST_IP",
         port: 3306,
         user: "root",
-        password: "asd12345",
-        database: "bycw_center_p",
+        // password: "asd12345",
+        // database: "bycw_center_p",
+        database: "fish_center",
+        password: "ZAQ!xsw2"
     },
 
     game_database: {
-        host: "127.0.0.1",
+        host: "HOST_IP",
         port: 3306,
         user: "root",
-        password: "asd12345",
-        database: "bycw_game_p",
+        // password: "asd12345",
+        // database: "bycw_game_p",
+        database: "fish_game",
+        password: "ZAQ!xsw2"
     },
 
     center_redis: {
-        host: "127.0.0.1",
+        host: "HOST_IP",
         port: 6379,
         db_index: 0,
     },
 
     game_redis: {
-        host: "127.0.0.1",
+        host: "HOST_IP",
         port: 6379,
         db_index: 1,
     },
@@ -58,22 +70,22 @@ var game_config = {
     game_servers:{
         // 0: {
         //     stype: Stype.TalkRoom,
-        //     host: "127.0.0.1",
+        //     host: "HOST_IP",
         //     port: 6084,
         // },
         1: {
             stype: Stype.Auth,
-            host: "127.0.0.1",
+            host: "HOST_IP",
             port: 6086,
         },
         2: {
             stype: Stype.GameSystem,
-            host: "127.0.0.1",
+            host: "HOST_IP",
             port: 6087,
         },
         3: {
             stype: Stype.FishGame,
-            host: "127.0.0.1",
+            host: "HOST_IP",
             port: 6088,
         }
     },
